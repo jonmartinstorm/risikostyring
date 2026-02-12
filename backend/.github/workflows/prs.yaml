@@ -1,0 +1,23 @@
+name: Run test & build on PRs
+on:
+  pull_request:
+jobs:
+  test-prs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high # Fail if introducing high or critical vulnerabilities
+      - uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: gradle
+      - uses: gradle/actions/setup-gradle@f29f5a9d7b09a7c6b29859002d29d24e1674c884
+      - name: Test & build
+        run: ./gradlew test build

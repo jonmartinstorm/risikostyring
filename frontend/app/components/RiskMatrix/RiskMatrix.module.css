@@ -1,0 +1,148 @@
+/* components/RiskMatrix/RiskMatrix.module.css */
+
+.wrap {
+  display: grid;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.matrixRow {
+  display: grid;
+  grid-template-columns: 34px auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.yLabel {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #555;
+  user-select: none;
+}
+
+.grid {
+  position: relative;
+  border: 1px solid #111;
+  box-sizing: border-box;
+}
+
+/* Celler */
+.cell {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid #111;
+}
+
+.green {
+  background: #00b050;
+}
+
+.yellow {
+  background: #fff200;
+}
+
+.red {
+  background: #ff0000;
+}
+
+/* Prikker */
+.dotWrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #111;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+.dotLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  background: rgba(255, 255, 255, 0.65);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+/* X-akse label */
+
+.xSpacer {
+  width: 34px;
+}
+
+.xLabelRow {
+  display: grid;
+  grid-template-columns: 34px auto;
+  gap: 12px;
+}
+
+.xLabel {
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #555;
+  user-select: none;
+}
+
+
+.dotLink {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.dotLink:hover .dot {
+  transform: scale(1.2);
+}
+
+.dotLink:hover .tooltip {
+  opacity: 1;
+  transform: translate(-50%, -6px);
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  pointer-events: none;
+
+  background: #111;
+  color: white;
+  font-size: 12px;
+  line-height: 1.3;
+  padding: 6px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  z-index: 10;
+}
+
