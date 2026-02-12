@@ -17,10 +17,20 @@ class PostgresRiskAssessmentRepository : RiskAssessmentRepository {
         RiskAssessmentDAO.findById(id)?.let(::daoToModel)
     }
 
-    override suspend fun add(name: String, description: String?): RiskAssessment = suspendTransaction {
+    override suspend fun add(
+        navn: String,
+        teamOmrade: String,
+        beskrivelse: String?,
+        oppsummering: String?,
+        status: String?,
+    ): RiskAssessment = suspendTransaction {
         val dao = RiskAssessmentDAO.new {
-            navn = name
-            beskrivelse = description
+            this.navn = navn
+            this.teamOmrade = teamOmrade
+            this.status = status
+            this.beskrivelse = beskrivelse
+            this.oppsummering = oppsummering
+            // createdAt/updatedAt settes av DB default ved insert (hvis kolonnene har default now())
         }
         daoToModel(dao)
     }

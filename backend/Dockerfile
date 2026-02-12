@@ -2,15 +2,19 @@
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 
+# Copy gradle wrapper + config first for caching
 COPY gradlew gradlew
 COPY gradle/ gradle/
 COPY build.gradle.kts settings.gradle.kts gradle.properties ./
 RUN chmod +x gradlew
 
-# Optional cache warmup
-RUN ./gradlew --no-daemon dependencies || true
+# Warm cache (won't fail the build if task list differs)
+RUN ./gradlew --no-daemon -q tasks >/dev/null 2>&1 || true
 
+# Copy sources last (breaks cache when code changes)
 COPY src/ src/
+
+# Build
 RUN ./gradlew --no-daemon clean build -x test
 
 # ---------- Runtime stage ----------

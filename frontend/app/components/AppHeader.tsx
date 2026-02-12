@@ -25,7 +25,7 @@ export function AppHeader() {
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: "var(--vurdering-blue)",
+        background: "var(--vurderings-blue)",
         color: "white",
       }}
     >

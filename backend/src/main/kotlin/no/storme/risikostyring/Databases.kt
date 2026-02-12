@@ -40,12 +40,13 @@ private fun Application.loadDbConfig(): DbConfig {
 
     // fallback to application.yaml
     val hasConfig = environment.config.propertyOrNull("postgres.url")?.getString() != null
-    if (!hasConfig) {
+    if (hasConfig) {
         val url = environment.config.property("postgres.url").getString()
         val username = environment.config.property("postgres.user").getString()
         val password = environment.config.property("postgres.password").getString()
         return DbConfig(url, username, password)
     }
+
 
     return DbConfig(
         url = "jdbc:postgresql://localhost:5432/risikovurdering",

@@ -9,7 +9,9 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     val repository = PostgresRiskAssessmentRepository()
-    configureSerialization(repository)
     configureDatabases()
+    configureSerialization()
+    configureErrors()
     configureRouting()
+    configureApiV1Routes(repository)
 }

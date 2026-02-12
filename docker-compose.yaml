@@ -37,5 +37,16 @@ services:
     ports:
       - "4001:4001"
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: risikovurdering-frontend
+    environment:
+      BACKEND_INTERNAL_URL: http://backend:4001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
 volumes:
   db_data:

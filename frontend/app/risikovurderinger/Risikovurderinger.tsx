@@ -7,9 +7,9 @@ import { Table } from "@navikt/ds-react";
 type Risikovurdering = {
   id: number;
   navn: string;
-  team_omrade: string;
+  teamOmrade: string;
   status: string;
-  created_at: string;
+  createdAt: string;
 };
 
 export function RisikovurderingerPage() {
@@ -18,7 +18,7 @@ export function RisikovurderingerPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/risikovurderinger")
+    fetch("/api/v1/risikovurderinger")
       .then((res) => {
         if (!res.ok) {
           throw new Error("Kunne ikke hente risikovurderinger");
@@ -52,10 +52,10 @@ export function RisikovurderingerPage() {
                 {r.navn}
               </Link>
             </Table.HeaderCell>
-            <Table.DataCell>{r.team_omrade}</Table.DataCell>
+            <Table.DataCell>{r.teamOmrade}</Table.DataCell>
             <Table.DataCell>{r.status}</Table.DataCell>
             <Table.DataCell>
-              {new Date(r.created_at).toLocaleDateString("no-NO")}
+              {new Date(r.createdAt).toLocaleDateString("no-NO")}
             </Table.DataCell>
           </Table.Row>
         ))}

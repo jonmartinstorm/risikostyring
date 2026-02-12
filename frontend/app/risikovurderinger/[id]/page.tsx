@@ -41,10 +41,9 @@ type Vurdering = {
 };
 
 async function getVurdering(id: string): Promise<Vurdering | null> {
-  const res = await fetch(`http://127.0.0.1:8000/api/risikovurderinger/${id}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(`/api/v1/risikovurderinger/${id}`, { cache: "no-store" });
 
+  
   if (res.status === 404) return null;
 
   if (!res.ok) {

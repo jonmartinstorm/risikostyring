@@ -14,7 +14,7 @@ import { ListItem } from "@navikt/ds-react/List";
 const NotFound = () => {
   return (
     <PageBlock width="xl" gutters>
-      <Box paddingBlock="20 16" data-aksel-template="404-golden-path">
+      <Box paddingBlock="space-80 space-64" data-aksel-template="404-v3">
         <VStack gap="space-40">
           <Alert variant="warning">
             <BodyShort>

@@ -20,7 +20,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 export function AppFooter() {
   return (
-    <footer style={{ background: "var(--vurdering-blue)", color: "white", marginTop: "2rem" }}>
+    <footer style={{ background: "var(--vurderings-blue)", color: "white", marginTop: "2rem" }}>
       <PageBlock as="footer" width="2xl" gutters style={{ paddingBlock: "2rem" }}>
         <div
           style={{
