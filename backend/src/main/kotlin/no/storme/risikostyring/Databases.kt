@@ -13,45 +13,43 @@ import java.sql.Connection
 import java.sql.DriverManager
 import org.jetbrains.exposed.sql.*
 
+data class DbConfig(
+    val url: String,
+    val username: String,
+    val password: String,
+)
+
 fun Application.configureDatabases() {
+    val cfg = loadDbConfig()
+    log.info("Connecting to postgres: url=${cfg.url}, username=${cfg.username}")
     Database.connect(
-        "jdbc:postgresql://localhost:5432/risikovurdering",
-        user = "app_user",
-        password = "demo-passord"
+        url = cfg.url,
+        driver = "org.postgresql.Driver",
+        user = cfg.username,
+        password = cfg.password
     )
 }
-/**
- * Makes a connection to a Postgres database.
- *
- * In order to connect to your running Postgres process,
- * please specify the following parameters in your configuration file:
- * - postgres.url -- Url of your running database process.
- * - postgres.user -- Username for database connection
- * - postgres.password -- Password for database connection
- *
- * If you don't have a database process running yet, you may need to [download]((https://www.postgresql.org/download/))
- * and install Postgres and follow the instructions [here](https://postgresapp.com/).
- * Then, you would be able to edit your url,  which is usually "jdbc:postgresql://host:port/database", as well as
- * user and password values.
- *
- *
- * @param embedded -- if [true] defaults to an embedded database for tests that runs locally in the same process.
- * In this case you don't have to provide any parameters in configuration file, and you don't have to run a process.
- *
- * @return [Connection] that represent connection to the database. Please, don't forget to close this connection when
- * your application shuts down by calling [Connection.close]
- * */
-fun Application.connectToPostgres(embedded: Boolean): Connection {
-    Class.forName("org.postgresql.Driver")
-    if (embedded) {
-        log.info("Using embedded H2 database for testing; replace this flag to use postgres")
-        return DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "root", "")
-    } else {
-        val url = environment.config.property("postgres.url").getString()
-        log.info("Connecting to postgres database at $url")
-        val user = environment.config.property("postgres.user").getString()
-        val password = environment.config.property("postgres.password").getString()
 
-        return DriverManager.getConnection(url, user, password)
+private fun Application.loadDbConfig(): DbConfig {
+    val envUrl = System.getenv("DB_JDBC_URL")
+    val envUsername = System.getenv("DB_USER")
+    val envPassword = System.getenv("DB_PASSWORD")
+    if (!envUrl.isNullOrBlank() && !envUsername.isNullOrBlank() && !envPassword.isNullOrBlank()) {
+        return DbConfig(envUrl, envUsername, envPassword)
     }
+
+    // fallback to application.yaml
+    val hasConfig = environment.config.propertyOrNull("postgres.url")?.getString() != null
+    if (!hasConfig) {
+        val url = environment.config.property("postgres.url").getString()
+        val username = environment.config.property("postgres.user").getString()
+        val password = environment.config.property("postgres.password").getString()
+        return DbConfig(url, username, password)
+    }
+
+    return DbConfig(
+        url = "jdbc:postgresql://localhost:5432/risikovurdering",
+        username = "app_user",
+        password = "demo-passord"
+    )
 }
