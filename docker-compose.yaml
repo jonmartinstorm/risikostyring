@@ -17,5 +17,25 @@ services:
       timeout: 3s
       retries: 30
 
+  backend:
+    build:
+      context: ./backend
+    container_name: risikovurdering-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # NB: db er service-navn i compose-nettverket
+      DB_JDBC_URL: jdbc:postgresql://db:5432/risikovurdering
+      DB_USER: app_user
+      DB_PASSWORD: demo-passord
+
+      # Hvis appen din støtter PORT (anbefalt)
+      PORT: "4001"
+      # Hvis du har host-binding i config, sett den til 0.0.0.0
+      HOST: "0.0.0.0"
+    ports:
+      - "4001:4001"
+
 volumes:
   db_data:

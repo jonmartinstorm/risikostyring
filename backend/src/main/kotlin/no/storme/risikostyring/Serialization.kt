@@ -1,88 +1,78 @@
 package no.storme.risikostyring
 
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import java.sql.Connection
-import java.sql.DriverManager
-import org.jetbrains.exposed.sql.*
-import no.storme.risikostyring.model.Priority
-import no.storme.risikostyring.model.Task
-import no.storme.risikostyring.model.TaskRepository
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
+import kotlinx.serialization.Serializable
+import no.storme.risikostyring.model.RiskAssessmentRepository
 
-fun Application.configureSerialization(repository: TaskRepository) {
-    install(ContentNegotiation) { json() }
+@Serializable
+data class CreateRiskAssessmentRequest(
+    val name: String,
+    val description: String? = null
+)
+
+fun Application.configureSerialization(repository: RiskAssessmentRepository) {
+    install(ContentNegotiation) {
+        json()
+    }
+
     routing {
-        route("/tasks") {
-            get {
-                val tasks = repository.allTasks()
-                call.respond(tasks)
-            }
+        route("/risk-assessments") {
+            get { call.respond(repository.all()) }
 
-            get("/byName/{taskName}") {
-                val name = call.parameters["taskName"]
-                if (name == null) {
+            get("/{id}") {
+                val id = call.parameters["id"]?.toIntOrNull()
+                if (id == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val task = repository.taskByName(name)
-                if (task == null) {
+                val assessment = repository.byId(id)
+                if (assessment == null) {
                     call.respond(HttpStatusCode.NotFound)
                     return@get
                 }
-                call.respond(task)
-            }
-
-            get("/byPriority/{priority}") {
-                val priorityAsText = call.parameters["priority"]
-                if (priorityAsText == null) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-                try {
-                    val priority = Priority.valueOf(priorityAsText)
-                    val tasks = repository.tasksByPriority(priority)
-
-                    if (tasks.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-                    call.respond(tasks)
-                } catch (ex: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
+                call.respond(assessment)
             }
 
             post {
                 try {
-                    val task = call.receive<Task>()
-                    repository.addTask(task)
-                    call.respond(HttpStatusCode.NoContent)
-                } catch (ex: IllegalStateException) {
+                    val req = call.receive<CreateRiskAssessmentRequest>()
+                    if (req.name.isBlank()) {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@post
+                    }
+                    val created = repository.add(
+                        name = req.name.trim(),
+                        description = req.description?.trim()?.ifBlank { null }
+                    )
+                    call.respond(HttpStatusCode.Created, created)
+                } catch (_: JsonConvertException) {
                     call.respond(HttpStatusCode.BadRequest)
-                } catch (ex: JsonConvertException) {
+                } catch (_: IllegalStateException) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
 
-            delete("/{taskName}") {
-                val name = call.parameters["taskName"]
-                if (name == null) {
+            delete("/{id}") {
+                val id = call.parameters["id"]?.toIntOrNull()
+                if (id == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
-                if (repository.removeTask(name)) {
-                    call.respond(HttpStatusCode.NoContent)
-                } else {
-                    call.respond(HttpStatusCode.NotFound)
-                }
+                if (repository.delete(id)) call.respond(HttpStatusCode.NoContent)
+                else call.respond(HttpStatusCode.NotFound)
             }
         }
     }

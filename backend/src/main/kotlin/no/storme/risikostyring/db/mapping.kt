@@ -1,34 +1,33 @@
 package no.storme.risikostyring.db
 
 import kotlinx.coroutines.Dispatchers
+import no.storme.risikostyring.model.RiskAssessment
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import no.storme.risikostyring.model.Priority
-import no.storme.risikostyring.model.Task
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
-object TaskTable : IntIdTable("task") {
-    val name = varchar("name", 50)
-    val description = varchar("description", 50)
-    val priority = varchar("priority", 50)
+// Matcher tabellen din i SQL: risikovurderinger
+object RiskAssessmentTable : IntIdTable("risikovurderinger") {
+    val navn = varchar("navn", 200)
+    val beskrivelse = text("beskrivelse").nullable()
 }
 
-class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<TaskDAO>(TaskTable)
+class RiskAssessmentDAO(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<RiskAssessmentDAO>(RiskAssessmentTable)
 
-    var name by TaskTable.name
-    var description by TaskTable.description
-    var priority by TaskTable.priority
+    var navn by RiskAssessmentTable.navn
+    var beskrivelse by RiskAssessmentTable.beskrivelse
 }
 
 suspend fun <T> suspendTransaction(block: Transaction.() -> T): T =
     newSuspendedTransaction(Dispatchers.IO, statement = block)
 
-fun daoToModel(dao: TaskDAO) = Task(
-    dao.name,
-    dao.description,
-    Priority.valueOf(dao.priority)
-)
+fun daoToModel(dao: RiskAssessmentDAO): RiskAssessment =
+    RiskAssessment(
+        id = dao.id.value,
+        name = dao.navn,
+        description = dao.beskrivelse
+    )
