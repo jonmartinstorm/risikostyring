@@ -16,8 +16,8 @@ import org.jetbrains.exposed.sql.*
 fun Application.configureDatabases() {
     Database.connect(
         "jdbc:postgresql://localhost:5432/risikovurdering",
-        user = "fastify_app",
-        password = "superhemmelig-passord"
+        user = "app_user",
+        password = "demo-passord"
     )
 }
 /**

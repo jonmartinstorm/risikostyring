@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: risikovurdering-db
+    environment:
+      POSTGRES_DB: risikovurdering
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: demo-passord
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d risikovurdering"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  db_data:
