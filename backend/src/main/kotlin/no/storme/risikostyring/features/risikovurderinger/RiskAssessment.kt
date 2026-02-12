@@ -1,4 +1,4 @@
-package no.storme.risikostyring.model
+package no.storme.risikostyring.features.risikovurderinger
 
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.Instant

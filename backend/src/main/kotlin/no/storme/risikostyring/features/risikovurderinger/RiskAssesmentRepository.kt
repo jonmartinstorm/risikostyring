@@ -1,4 +1,4 @@
-package no.storme.risikostyring.model
+package no.storme.risikostyring.features.risikovurderinger
 
 interface RiskAssessmentRepository {
     suspend fun all(): List<RiskAssessment>

@@ -1,4 +1,4 @@
-package no.storme.risikostyring
+package no.storme.risikostyring.config
 
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application

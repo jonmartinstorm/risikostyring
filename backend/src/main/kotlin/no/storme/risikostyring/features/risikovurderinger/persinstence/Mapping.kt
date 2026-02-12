@@ -3,7 +3,7 @@ package no.storme.risikostyring.db
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Instant as KxInstant
 import kotlinx.datetime.toKotlinInstant
-import no.storme.risikostyring.model.RiskAssessment
+import no.storme.risikostyring.features.risikovurderinger.RiskAssessment
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -70,3 +70,38 @@ Questions and/or feature requests? Please create an [issue](https://github.com/n
 If you work in [@navikt](https://github.com/navikt) you can reach us at the Slack channel [#appsec](https://nav-it.slack.com/archives/C06P91VN27M).
 
 
+###
+```
+no/storme/risikostyring
+├── Application.kt
+├── config/
+│   ├── Databases.kt
+│   ├── Serialization.kt
+│   └── Errors.kt
+├── routing/
+│   ├── Routing.kt              // health, root, static (hvis dere vil)
+│   └── ApiV1.kt                // monterer /api/v1 og features
+├── db/
+│   ├── suspendTransaction.kt   // (valgfritt) felles tx helper
+│   └── mappings/               // (valgfritt) felles converters
+├── features/
+│   ├── riskassessments/
+│   │   ├── RiskAssessmentRoutes.kt
+│   │   ├── RiskAssessmentModels.kt      // data classes + request/response DTOs
+│   │   ├── RiskAssessmentRepository.kt
+│   │   ├── PostgresRiskAssessmentRepository.kt
+│   │   └── persistence/
+│   │       ├── RiskAssessmentTable.kt
+│   │       ├── RiskAssessmentDAO.kt
+│   │       └── Mapping.kt
+│   └── riskregister/
+│       ├── RiskRegisterRoutes.kt
+│       ├── RiskRegisterModels.kt
+│       ├── RiskRegisterRepository.kt
+│       ├── PostgresRiskRegisterRepository.kt
+│       └── persistence/
+│           ├── RiskTable.kt
+│           ├── RiskDAO.kt
+│           └── Mapping.kt
+
+```

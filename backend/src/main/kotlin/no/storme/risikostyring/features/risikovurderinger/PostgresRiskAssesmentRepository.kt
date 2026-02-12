@@ -1,4 +1,4 @@
-package no.storme.risikostyring.model
+package no.storme.risikostyring.features.risikovurderinger
 
 import no.storme.risikostyring.db.RiskAssessmentDAO
 import no.storme.risikostyring.db.RiskAssessmentTable
