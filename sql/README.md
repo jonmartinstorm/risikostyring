@@ -1,3 +1,6 @@
+# Oppsett av database og seeds
+Alle seeds er generert med LLM.
+
 Som postgres user:
 
 ```sql
