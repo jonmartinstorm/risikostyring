@@ -9,42 +9,57 @@ En rask mockup / PoC for et risikostyringsverktøy bygget som monorepo med:
 
 Målet er å utforske flyt og datamodell for risikovurderinger, tiltak og aggregert risikobilde – ikke å levere et ferdig produkt.
 
-Risikostyring skal støtte prioritering av tiltak og ressursbruk.
-Hvis systemet ikke hjelper oss å prioritere, så støtter det ikke styring.
-
 ## Repo-struktur
 
 - `backend/` – Ktor API (inspirert av NAV backend-golden-path)
 - `frontend/` – Next.js webapp
 - `sql/` – schema/seed/eksperimenter for PostgreSQL
 
-## Behovsvurdering og prinsipper
+## Behovsvurdering og prinsipper (og ambisjon atm)
 
-Vi trenger høy og jevn kvalitet i vurderingene. Det betyr:
+Formålet med en risikovurderingsapplikasjon er å støtte prioritering av tiltak og ressursbruk. 
+Hvis systemet ikke hjelper oss å prioritere, så støtter det ikke styring.
+
+For å få dette til må vurderingene være konsistente, etterprøvbare og sammenlignbare over tid og på tvers av organisatoriske nivåer.
 
 ### Felles skalaer og konsistens
 - Felles **konsekvensskala**
 - Felles **sannsynlighetsskala**
-- Felles **aksept-/risikomatrise** (hva er grønn/gul/rød)
+- Felles **aksept-/risikomatrise**
 
-Dette gjør at vurderinger kan sammenlignes og aggregeres (team → område → funksjon).
+Standardiserte skalaer gjør det mulig å sammenligne vurderinger, aggregere risiko og etablere et samlet risikobilde (team → område → virksomhet). Uten konsistens blir tallene vanskelig å bruke i styring.
 
 ### Dokumentasjon av sannsynlighet
-For sikkerhetsrisikoer skal sannsynlighet kunne begrunnes med:
-- trusselvurdering
-- sårbarhetsvurdering
+Når sannsynlighet vurderes, skal grunnlaget kunne dokumenteres, for eksempel gjennom beskrivelse av:
+- trusler
+- sårbarheter
+- relevante forutsetninger
 
-Dette er et minimumskrav: når man setter sannsynlighet skal det være mulig å dokumentere grunnlaget.
+Vurderinger må være forståelige og etterprøvbare også i ettertid. Dette er avgjørende både for læring, revisjon og regulatoriske krav.
 
 ### Aggregere og rapportere
 Systemet skal støtte:
-- oversikter per tema/team/område
-- aggregert risikobilde på høyere nivå
-- “før og etter” (tiltak som endrer risikonivå)
+- Oversikt per tema, team eller område
+- Aggregert risikobilde på høyere nivå
+- Tydelig “før og etter” ved gjennomføring av tiltak
+
+Risikostyring handler ikke bare om å registrere risiko, men om å synliggjøre rest-risiko og effekten av tiltak.
+
+### Tiltak og sporbarhet
+
+Tiltak må være tydelig koblet til risiko og kunne følges opp over tid. Det innebærer:
+
+- Klar kobling mellom risiko og tiltak
+- Status og historikk
+- Dokumentasjon av forventet og faktisk effekt
+
+Uten sporbarhet reduseres risikostyring til dokumentasjon fremfor beslutningsstøtte.
 
 ### Tilgangsstyring
-Tilgangsstyring er viktig: kun deltakere (eller definerte roller) skal kunne endre vurderinger.
-(Autentisering/autorisasjon i PoC kan være enkel først, men må ha et tydelig mønster.)
+Kun autoriserte brukere skal kunne opprette og endre vurderinger. 
+Tilgangsstyring må være tydelig, men ikke hindre effektiv bruk.
+
+En risikovurderingsapplikasjon må balansere kontroll og brukervennlighet.
 
 ## Kjøring (lokalt)
 
@@ -78,27 +93,11 @@ Se `sql/README.md` for detaljer.
 
 ## Inspirasjon
 
-- Backend: https://github.com/navikt/backend-golden-path
-- Frontend: (legg inn riktig repo her om det er frontend-golden-path)
-
-### Notater
-Dagens utfordringer:
-Vanskelig å få samlet rest-risiko
-Før/etter vurdering er ikke alltid tydelig
-Tiltak kan miste sporbarhet over tid
-Begrenset støtte for prioritering på tvers
-(Funksjonsnivå og Trusselmodellering)
-
-behovene vi ser fremover:
-Mer komplekse teknologilandskap
-Økt regulatorisk forventning
-Behov for dokumenterbar styring
-Behov for konsistent metodikk
-
-## Inspirasjon
- - [Fuck it, ship it - Stine Mølgaard og Jacob Bøtter](https://fuckitshipit.dk/)
- - [Codin' Dirty - Carson Gross](https://htmx.org/essays/codin-dirty/)
- - 差不多 (chà bù duō) - «godt nok» altså at noe ikke er perfekt, men tilstrekkelig.
+- Backend: [Nais - Golden Path backend](https://github.com/navikt/backend-golden-path)
+- Frontend: [Aksel - Golden Path frontend](https://aksel.nav.no/god-praksis/artikler/golden-path-frontend)
+- [Fuck it, ship it - Stine Mølgaard og Jacob Bøtter](https://fuckitshipit.dk/)
+- [Codin' Dirty - Carson Gross](https://htmx.org/essays/codin-dirty/)
+- 差不多 (chà bù duō) - «godt nok» altså at noe ikke er perfekt, men tilstrekkelig.
 
 ## Erklæring om bruk av generativ KI
 
