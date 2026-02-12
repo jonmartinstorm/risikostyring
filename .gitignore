@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
+
+# Generic build output
+dist/
+build/
+coverage/
+
+# Node (fallback safety)
+node_modules/
+.next/
+
+# Gradle fallback
+.gradle/
