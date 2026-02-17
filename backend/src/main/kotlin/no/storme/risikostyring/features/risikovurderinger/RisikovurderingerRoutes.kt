@@ -1,4 +1,4 @@
-package no.storme.risikostyring.features.risikovurderinger
+package no.storme.risikostyring.features.risikovurderinger.api
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
@@ -8,7 +8,9 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
+import no.storme.risikostyring.features.risikovurderinger.domain.RiskAssessmentRepository
 
 @Serializable
 data class CreateRiskAssessmentRequest(
@@ -19,6 +21,7 @@ data class CreateRiskAssessmentRequest(
 )
 
 fun Route.risikovurderingerRoutes(repository: RiskAssessmentRepository) {
+    route("/risikovurderinger") {
         get {
             call.respond(repository.all())
         }
@@ -75,3 +78,4 @@ fun Route.risikovurderingerRoutes(repository: RiskAssessmentRepository) {
             else call.respond(HttpStatusCode.NotFound)
         }
     }
+}

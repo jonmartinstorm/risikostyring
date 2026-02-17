@@ -13,7 +13,6 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.time.Instant as JInstant
 
-// Matcher tabellen din i SQL: risikovurderinger
 object RiskAssessmentTable : IntIdTable("risikovurderinger") {
     val navn = text("navn")
     val teamOmrade = text("team_omrade")
