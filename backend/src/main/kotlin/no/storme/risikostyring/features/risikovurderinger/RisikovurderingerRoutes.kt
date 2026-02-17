@@ -9,54 +9,45 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import kotlinx.serialization.Serializable
+import no.storme.risikostyring.features.risikovurderinger.domain.CreateRiskAssessment
 import no.storme.risikostyring.features.risikovurderinger.domain.RiskAssessmentRepository
-
-@Serializable
-data class CreateRiskAssessmentRequest(
-    val navn: String,
-    val teamOmrade: String,
-    val beskrivelse: String? = null,
-    val oppsummering: String? = null
-)
 
 fun Route.risikovurderingerRoutes(repository: RiskAssessmentRepository) {
     route("/risikovurderinger") {
+
+        // GET /risikovurderinger
         get {
-            call.respond(repository.all())
+            call.respond(repository.allAssessments())
         }
 
+        // GET /risikovurderinger/{id}
         get("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
+                ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-            val assessment = repository.byId(id)
-            if (assessment == null) {
-                call.respond(HttpStatusCode.NotFound)
-                return@get
-            }
+            val assessment = repository.assessmentById(id)
+                ?: return@get call.respond(HttpStatusCode.NotFound)
 
             call.respond(assessment)
         }
 
+        // POST /risikovurderinger
         post {
             try {
-                val req = call.receive<CreateRiskAssessmentRequest>()
+                val req = call.receive<CreateRiskAssessment>()
 
                 if (req.navn.isBlank() || req.teamOmrade.isBlank()) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@post
+                    return@post call.respond(HttpStatusCode.BadRequest)
                 }
 
-                val created = repository.add(
-                    navn = req.navn.trim(),
-                    teamOmrade = req.teamOmrade.trim(),
-                    beskrivelse = req.beskrivelse?.trim()?.ifBlank { null },
-                    oppsummering = req.oppsummering?.trim()?.ifBlank { null },
-                    // status: lar repo defaulte til "pågår" hvis du har default i interfacet
+                val created = repository.createAssessment(
+                    req.copy(
+                        navn = req.navn.trim(),
+                        teamOmrade = req.teamOmrade.trim(),
+                        beskrivelse = req.beskrivelse?.trim()?.ifBlank { null },
+                        oppsummering = req.oppsummering?.trim()?.ifBlank { null },
+                        status = req.status?.trim()?.ifBlank { null }
+                    )
                 )
 
                 call.respond(HttpStatusCode.Created, created)
@@ -67,15 +58,23 @@ fun Route.risikovurderingerRoutes(repository: RiskAssessmentRepository) {
             }
         }
 
+        // DELETE /risikovurderinger/{id}
         delete("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
-            }
+                ?: return@delete call.respond(HttpStatusCode.BadRequest)
 
-            if (repository.delete(id)) call.respond(HttpStatusCode.NoContent)
+            if (repository.deleteAssessment(id)) call.respond(HttpStatusCode.NoContent)
             else call.respond(HttpStatusCode.NotFound)
+        }
+
+        // ----------
+        // Risikoer
+        // ----------
+        get("/{id}/risikoer") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest)
+
+            call.respond(repository.risksForAssessment(id))
         }
     }
 }

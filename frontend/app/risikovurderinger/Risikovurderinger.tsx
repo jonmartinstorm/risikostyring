@@ -1,8 +1,4 @@
-"use client";
-
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Table } from "@navikt/ds-react";
+import {RisikovurderingerTabellClient} from "./RisikovurderingerTabellClient"
 
 type Risikovurdering = {
   id: number;
@@ -12,54 +8,21 @@ type Risikovurdering = {
   createdAt: string;
 };
 
-export function RisikovurderingerPage() {
-  const [data, setData] = useState<Risikovurdering[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+async function getRisikovurderinger(): Promise<Risikovurdering[]> {
+  const base = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001";
+  const res = await fetch(`${base}/api/v1/risikovurderinger`, {
+    cache: "no-store",
+  });
 
-  useEffect(() => {
-    fetch("/api/v1/risikovurderinger")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Kunne ikke hente risikovurderinger");
-        }
-        return res.json();
-      })
-      .then(setData)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  if (!res.ok) {
+    throw new Error(`Kunne ikke hente risikovurderinger (${res.status})`);
+  }
 
-  if (loading) return <p>Laster…</p>;
-  if (error) return <p>Feil: {error}</p>;
+  return res.json();
+}
 
-  return (
-    <Table>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
-          <Table.HeaderCell scope="col">Team</Table.HeaderCell>
-          <Table.HeaderCell scope="col">Status</Table.HeaderCell>
-          <Table.HeaderCell scope="col">Opprettet</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
+export async function RisikovurderingerPage() {
+  const data = await getRisikovurderinger();
 
-      <Table.Body>
-        {data.map((r) => (
-          <Table.Row key={r.id}>
-            <Table.HeaderCell scope="row">
-              <Link href={`/risikovurderinger/${r.id}`} style={{ textDecoration: "none" }}>
-                {r.navn}
-              </Link>
-            </Table.HeaderCell>
-            <Table.DataCell>{r.teamOmrade}</Table.DataCell>
-            <Table.DataCell>{r.status}</Table.DataCell>
-            <Table.DataCell>
-              {new Date(r.createdAt).toLocaleDateString("no-NO")}
-            </Table.DataCell>
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
-  );
+  return <RisikovurderingerTabellClient initialData={data}/>;
 }

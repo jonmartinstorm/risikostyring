@@ -1,16 +1,15 @@
 package no.storme.risikostyring.features.risikovurderinger.domain
 
-import kotlinx.serialization.Serializable
 import kotlinx.datetime.Instant
+import kotlinx.serialization.Serializable
 
 @Serializable
-data class RiskAssessment(
+data class Tiltak(
     val id: Int,
+    val risikoId: Int,
     val navn: String,
-    val teamOmrade: String,
-    val status: String?,   
-    val beskrivelse: String?, 
-    val oppsummering: String?,   
+    val beskrivelse: String?,
+    val status: String,
     val createdAt: Instant,
     val updatedAt: Instant
 )

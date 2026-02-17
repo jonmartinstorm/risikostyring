@@ -41,7 +41,8 @@ type Vurdering = {
 };
 
 async function getVurdering(id: string): Promise<Vurdering | null> {
-  const res = await fetch(`/api/v1/risikovurderinger/${id}`, { cache: "no-store" });
+  const base = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4001";
+  const res = await fetch(`${base}/api/v1/risikovurderinger`, { cache: "no-store" });
 
   
   if (res.status === 404) return null;
