@@ -1,11 +1,9 @@
-package no.storme.risikostyring.features.risikovurderinger
+package no.storme.risikostyring.features.risikovurderinger.persistence
 
-import no.storme.risikostyring.db.RiskAssessmentDAO
-import no.storme.risikostyring.db.RiskAssessmentTable
-import no.storme.risikostyring.db.daoToModel
-import no.storme.risikostyring.db.suspendTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
+import no.storme.risikostyring.features.risikovurderinger.domain.RiskAssessment
+import no.storme.risikostyring.features.risikovurderinger.domain.RiskAssessmentRepository
 
 class PostgresRiskAssessmentRepository : RiskAssessmentRepository {
 

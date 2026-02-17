@@ -11,6 +11,7 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.time.Instant as JInstant
+import no.storme.risikostyring.features.risikovurderinger.domain.RiskAssessment
 
 object RiskAssessmentTable : IntIdTable("risikovurderinger") {
     val navn = text("navn")

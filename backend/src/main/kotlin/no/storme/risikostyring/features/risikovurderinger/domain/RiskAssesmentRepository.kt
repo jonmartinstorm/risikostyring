@@ -1,6 +1,4 @@
-package no.storme.risikostyring.features.risikovurderinger.persistence
-
-import no.storme.risikostyring.features.risikovurderinger.domain.RiskAssessment
+package no.storme.risikostyring.features.risikovurderinger.domain
 
 interface RiskAssessmentRepository {
     suspend fun all(): List<RiskAssessment>

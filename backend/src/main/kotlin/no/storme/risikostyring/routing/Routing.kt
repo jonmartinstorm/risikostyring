@@ -16,5 +16,7 @@ fun Application.configureRouting() {
         get("/health") {
             call.respond(HttpStatusCode.OK)
         }
+
+        apiV1()
     }
 }
