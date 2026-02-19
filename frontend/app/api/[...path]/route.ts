@@ -1,22 +1,29 @@
 import { NextRequest } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ path: string[] }> }
-) {
-  const { path } = await context.params;
+type Ctx = { params: Promise<{ path: string[] }> };
 
+function backendTarget(req: NextRequest, path: string[]) {
   const backend = process.env.BACKEND_INTERNAL_URL ?? "http://backend:4001";
   const target = `${backend}/api/${path.join("/")}`;
 
-  // Forward querystring også
   const url = new URL(req.url);
   const targetWithQuery =
     url.search ? `${target}?${url.searchParams.toString()}` : target;
 
-  const res = await fetch(targetWithQuery, {
+  return targetWithQuery;
+}
+
+function passthroughHeaders(res: Response) {
+  return {
+    "content-type": res.headers.get("content-type") ?? "application/json",
+  };
+}
+
+export async function GET(req: NextRequest, context: Ctx) {
+  const { path } = await context.params;
+
+  const res = await fetch(backendTarget(req, path), {
     headers: {
-      // forward litt nyttig info
       accept: req.headers.get("accept") ?? "application/json",
     },
     cache: "no-store",
@@ -24,9 +31,24 @@ export async function GET(
 
   return new Response(res.body, {
     status: res.status,
+    headers: passthroughHeaders(res),
+  });
+}
+
+export async function POST(req: NextRequest, context: Ctx) {
+  const { path } = await context.params;
+
+  const res = await fetch(backendTarget(req, path), {
+    method: "POST",
     headers: {
-      // Behold content-type om backend setter det
-      "content-type": res.headers.get("content-type") ?? "application/json",
+      "content-type": req.headers.get("content-type") ?? "application/json",
+      accept: req.headers.get("accept") ?? "application/json",
     },
+    body: await req.text(), // forward raw body
+  });
+
+  return new Response(res.body, {
+    status: res.status,
+    headers: passthroughHeaders(res),
   });
 }

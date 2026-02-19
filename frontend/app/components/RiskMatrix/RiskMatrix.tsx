@@ -1,20 +1,21 @@
 // components/RiskMatrix/RiskMatrix.tsx
 import Link from "next/link";
 import styles from "./RiskMatrix.module.css";
+import type { Risiko } from "@/app/risikovurderinger/[vurderingId]/types";
 
 export type Risk = {
   id: string;
   title: string;
   probability: 1 | 2 | 3 | 4 | 5;
   consequence: 1 | 2 | 3 | 4 | 5;
-
+  
   href?: string;          // hvor vi klikker videre
   tooltip?: string;       // det som vises på hover
 };
 
 
 type Props = {
-  risks: Risk[];
+  risks: Risiko[];
   size?: number; // px, total bredde/høyde på matrisen
 };
 
@@ -60,96 +61,93 @@ function hashToUnit(str: string) {
 export function RiskMatrix({ risks, size = 520 }: Props) {
   const gridSize = size;
   const cell = gridSize / 5;
-
+  
   return (
     <div className={styles.wrap}>
-      <div className={styles.titleRow}>
-        <div className={styles.title}>Risikomatrise</div>
-      </div>
-
-      <div className={styles.matrixRow}>
-        <div className={styles.yLabel}>SANNSYNLIGHET</div>
-
-        <div
-          className={styles.grid}
-          style={{ width: gridSize, height: gridSize }}
-          aria-label="Risikomatrise 5x5"
-          role="img"
-        >
-          {/* Celler */}
-          {Array.from({ length: 5 }).map((_, rowIdx) => {
-            // Vi vil ha 5 øverst, 1 nederst (som klassisk matrise)
-            const prob = (5 - rowIdx) as 1 | 2 | 3 | 4 | 5;
-
-            return Array.from({ length: 5 }).map((_, colIdx) => {
-              const cons = (colIdx + 1) as 1 | 2 | 3 | 4 | 5;
-              const level = getCellLevel(prob, cons);
-
-              return (
-                <div
-                  key={`${prob}-${cons}`}
-                  className={`${styles.cell} ${styles[level]}`}
-                  style={{
-                    left: colIdx * cell,
-                    top: rowIdx * cell,
-                    width: cell,
-                    height: cell,
-                  }}
-                  aria-label={`Sannsynlighet ${prob}, konsekvens ${cons}`}
-                />
-              );
-            });
-          })}
-
-          {/* Prikker */}
-          {risks.map((r) => {
-  const rowIdx = 5 - r.probability;
-  const colIdx = r.consequence - 1;
-
-  const jx = (hashToUnit(r.id + "x") - 0.5) * 0.36;
-  const jy = (hashToUnit(r.id + "y") - 0.5) * 0.36;
-
-  const x = colIdx * cell + cell * (0.5 + jx);
-  const y = rowIdx * cell + cell * (0.5 + jy);
-
-  const safeX = clamp(x, colIdx * cell + 10, (colIdx + 1) * cell - 10);
-  const safeY = clamp(y, rowIdx * cell + 10, (rowIdx + 1) * cell - 10);
-
-  const tooltip = r.tooltip ?? r.title;
-  const href = r.href ?? "#";
-
-  return (
-    <Link
-      key={r.id}
-      href={href}
-      className={styles.dotLink}
-      style={{ left: safeX, top: safeY }}
-      title={tooltip}
-      aria-label={`${r.id}: ${tooltip}`}
+    
+    <div className={styles.matrixRow}>
+    <div className={styles.yLabel}>SANNSYNLIGHET</div>
+    
+    <div
+    className={styles.grid}
+    style={{ width: gridSize, height: gridSize }}
+    aria-label="Risikomatrise 5x5"
+    role="img"
     >
-      <span className={styles.dot} />
-      <span className={styles.dotLabel}>{r.id}</span>
-
-      {/* Custom tooltip */}
-      <span className={styles.tooltip}>
+    {/* Celler */}
+    {Array.from({ length: 5 }).map((_, rowIdx) => {
+      // Vi vil ha 5 øverst, 1 nederst (som klassisk matrise)
+      const prob = (5 - rowIdx) as 1 | 2 | 3 | 4 | 5;
+      
+      return Array.from({ length: 5 }).map((_, colIdx) => {
+        const cons = (colIdx + 1) as 1 | 2 | 3 | 4 | 5;
+        const level = getCellLevel(prob, cons);
+        
+        return (
+          <div
+          key={`${prob}-${cons}`}
+          className={`${styles.cell} ${styles[level]}`}
+          style={{
+            left: colIdx * cell,
+            top: rowIdx * cell,
+            width: cell,
+            height: cell,
+          }}
+          aria-label={`Sannsynlighet ${prob}, konsekvens ${cons}`}
+          />
+        );
+      });
+    })}
+    
+    {/* Prikker */}
+    {risks.map((r) => {
+      const rowIdx = 5 - r.sannsynlighet;
+      const colIdx = r.konsekvens - 1;
+      
+      const jx = (hashToUnit(r.id + "x") - 0.5) * 0.5;
+      const jy = (hashToUnit(r.id + "y") - 0.5) * 0.5;
+      
+      const x = colIdx * cell + cell * (0.5 + jx);
+      const y = rowIdx * cell + cell * (0.5 + jy);
+      
+      const safeX = clamp(x, colIdx * cell + 10, (colIdx + 1) * cell - 10);
+      const safeY = clamp(y, rowIdx * cell + 10, (rowIdx + 1) * cell - 10);
+      
+      const tooltip = r.navn;
+      const href = `/risikovurderinger/${r.vurderingId}/risiko/${r.id}`;
+      
+      return (
+        <Link
+        key={r.id}
+        href={href}
+        className={styles.dotLink}
+        style={{ left: safeX, top: safeY }}
+        title={tooltip}
+        aria-label={`${r.id}: ${tooltip}`}
+        >
+        <span className={styles.dot} />
+        <span className={styles.dotLabel}>{r.id}</span>
+        
+        {/* Custom tooltip */}
+        <span className={styles.tooltip}>
         <strong>{r.id}</strong>
         <br />
         {tooltip}
-      </span>
-    </Link>
-  );
-})}
-
-        </div>
-      </div>
-
-      <div className={styles.xLabelRow}>
-        <div className={styles.xSpacer} />
-  <div
+        </span>
+        </Link>
+      );
+    })}
+    
+    </div>
+    </div>
+    
+    <div className={styles.xLabelRow}>
+    <div className={styles.xSpacer} />
+    <div
     className={styles.xLabel}
     style={{ width: gridSize }}
-  >KONSEKVENS</div>
-      </div>
+    >KONSEKVENS</div>
+    </div>
     </div>
   );
 }

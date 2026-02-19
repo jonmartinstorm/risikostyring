@@ -76,5 +76,21 @@ fun Route.risikovurderingerRoutes(repository: RiskAssessmentRepository) {
 
             call.respond(repository.risksForAssessment(id))
         }
+
+        // ----------
+        // Personer
+        // ----------
+        get("/{id}/personer") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest)
+
+            val persons = repository
+                .participantsForAssessment(id)
+                .mapNotNull { participant ->
+                    repository.personById(participant.personId)
+                }
+
+            call.respond(persons)
+        }
     }
 }
